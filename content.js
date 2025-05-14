@@ -161,27 +161,39 @@ function createTradingPageButtons() {
 
 // Handle trading page button clicks
 function handleTradingButtonClick(action, tokenPairAddress) {
+
+  console.log('handleTradingButtonClick, tokenPairAddress: ', tokenPairAddress);
+
+  
   const button = event.currentTarget;
   button.classList.add('axiom-helper-button-pulse');
 
-  const tokenInfo = {
-    address: tokenPairAddress,
-    action: action,
-    timestamp: new Date().toISOString()
-  };
-
-  const wsData = tokenDataMap.get(tokenPairAddress.toLowerCase());
-  if (wsData) {
-    Object.assign(tokenInfo, wsData);
-  }
-
-  chrome.runtime.sendMessage({
-    action: action,
-    tokenInfo: tokenInfo
-  }, response => {
-    console.log('Background response:', response);
-  });
-
+  ////
+  fetch(`https://api10.axiom.trade/pair-info?pairAddress=${poolId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Origin': 'https://axiom.trade',
+                'Referer': 'https://axiom.trade/',
+            },
+            credentials: 'include',
+        }).then(async response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json(); // Convert the response to JSON
+            console.log('fetch token info: ', data);
+            createRequest({
+                tokenAddress: data.tokenAddress,
+                devAddress: data.deployerAddress,
+                orderType: "dev"
+            })
+        }).then(data => {
+            console.log('Fetched data:', data); // Handle the data
+        }).catch(error => {
+            console.error('Error fetching data:', error);
+        });
+  
   setTimeout(() => {
     button.classList.remove('axiom-helper-button-pulse');
   }, 400);
