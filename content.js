@@ -205,7 +205,6 @@ function handleButtonClick(event, action, element) {
     tokenDataMap.get(tokenInfo.address) : null;
 
   const finalTokenInfo = {
-    ...tokenInfo,
     ...completeTokenInfo,
     action,
     timestamp: new Date().toISOString()
