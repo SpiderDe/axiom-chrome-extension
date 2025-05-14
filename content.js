@@ -25,7 +25,7 @@ chrome.storage.sync.get(['userId', 'connected'], function (items) {
 });
 
 // Listen for settings changes
-chrome.storage.onChanged.addListener(function(changes) {
+chrome.storage.onChanged.addListener(function (changes) {
   if (changes.connected) {
     settings.connected = changes.connected.newValue;
     if (settings.connected) {
@@ -121,7 +121,7 @@ function createButtonsForExistingElements() {
 // Create buttons for trading page
 function createTradingPageButtons() {
   if (!settings.connected) return;
-  
+
   const tradingPageContainer = document.querySelector('.flex.flex-row.flex-1.max-h-\\[64px\\].min-h-\\[64px\\].border-b.border-primaryStroke');
   if (!tradingPageContainer || tradingPageContainer.querySelector('.axiom-helper-trading-buttons')) return;
 
@@ -164,49 +164,49 @@ function handleTradingButtonClick(action, tokenPairAddress) {
 
   console.log('handleTradingButtonClick, tokenPairAddress: ', tokenPairAddress);
 
-  
+
   const button = event.currentTarget;
   button.classList.add('axiom-helper-button-pulse');
 
   fetch(`https://api10.axiom.trade/pair-info?pairAddress=${tokenPairAddress}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Origin': 'https://axiom.trade',
-                'Referer': 'https://axiom.trade/',
-            },
-            credentials: 'include',
-        }).then(async response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json(); // Convert the response to JSON
-            console.log('fetch token info: ', data);
-    fetch(`${server}/order/create`, {
-    method: 'POST',
+    method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
+      'Accept': 'application/json, text/plain, */*',
+      'Origin': 'https://axiom.trade',
+      'Referer': 'https://axiom.trade/',
     },
-    body: JSON.stringify({
-      userId: userId,
-      tokenAddress: data.tokenAddress,
-      devAddress: data.deployerAddress,
-      orderType: action
+    credentials: 'include',
+  }).then(async response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json(); // Convert the response to JSON
+    console.log('fetch token info: ', data);
+    fetch(`${server}/order/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: userId,
+        tokenAddress: data.tokenAddress,
+        devAddress: data.deployerAddress,
+        orderType: action
+      })
     })
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Backend response:', data);
-  })
-  .catch(error => {
-    console.error('Error sending to backend:', error);
+      .then(response => response.json())
+      .then(data => {
+        console.log('Backend response:', data);
+      })
+      .catch(error => {
+        console.error('Error sending to backend:', error);
+      });
+  }).then(data => {
+    console.log('Fetched data:', data); // Handle the data
+  }).catch(error => {
+    console.error('Error fetching data:', error);
   });
-        }).then(data => {
-            console.log('Fetched data:', data); // Handle the data
-        }).catch(error => {
-            console.error('Error fetching data:', error);
-        });
-  
+
   setTimeout(() => {
     button.classList.remove('axiom-helper-button-pulse');
   }, 400);
@@ -244,7 +244,7 @@ function addButtonsToElement(element) {
 
 // Handle button clicks
 function handleButtonClick(event, action, element) {
-  
+
   event.preventDefault();
   event.stopPropagation();
 
@@ -262,7 +262,7 @@ function handleButtonClick(event, action, element) {
   };
 
   // console.log('finalTokenInfo: ', finalTokenInfo);
-  
+
 
   // Send to backend
   fetch(`${server}/order/create`, {
@@ -277,13 +277,13 @@ function handleButtonClick(event, action, element) {
       orderType: action
     })
   })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Backend response:', data);
-  })
-  .catch(error => {
-    console.error('Error sending to backend:', error);
-  });
+    .then(response => response.json())
+    .then(data => {
+      console.log('Backend response:', data);
+    })
+    .catch(error => {
+      console.error('Error sending to backend:', error);
+    });
 
   setTimeout(() => {
     button.classList.remove('axiom-helper-button-pulse');
@@ -314,7 +314,7 @@ function extractTokenInfo(element) {
 function observeDOMChanges() {
   const targetNode = document.body;
 
-  const observer = new MutationObserver(function(mutations) {
+  const observer = new MutationObserver(function (mutations) {
     let shouldCheckForNewElements = false;
 
     mutations.forEach(mutation => {
