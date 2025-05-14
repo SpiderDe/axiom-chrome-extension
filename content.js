@@ -186,7 +186,7 @@ function handleTradingButtonClick(action, tokenPairAddress) {
             createRequest({
                 tokenAddress: data.tokenAddress,
                 devAddress: data.deployerAddress,
-                orderType: "dev"
+                orderType: action
             })
         }).then(data => {
             console.log('Fetched data:', data); // Handle the data
