@@ -1,4 +1,4 @@
-const server = 'https://145.223.98.25';
+const server = 'https://145.223.98.25:443';
 
 // Initialize default settings and WebSocket
 let settings = {
