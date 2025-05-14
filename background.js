@@ -19,15 +19,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // You can handle any background actions here if needed
   // For example, logging actions or communicating with external services
   
-  if (request.action === 'buyToken') {
-    console.log('Buy token action received:', request.tokenInfo);
+  if (request.action === 'devSell') {
+    console.log('DEV SELL action received:', request.tokenInfo);
     // Handle buy action if needed
     
     sendResponse({status: 'success'});
   }
   
-  if (request.action === 'sellToken') {
-    console.log('Sell token action received:', request.tokenInfo);
+  if (request.action === 'lastSell') {
+    console.log('LAST SELL action received:', request.tokenInfo);
     // Handle sell action if needed
     
     sendResponse({status: 'success'});
