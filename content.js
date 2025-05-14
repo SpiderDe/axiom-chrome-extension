@@ -210,6 +210,8 @@ function handleButtonClick(event, action, element) {
     timestamp: new Date().toISOString()
   };
 
+  console.log('finalTokenInfo: ', finalTokenInfo);
+
   chrome.runtime.sendMessage({
     action: action,
     tokenInfo: finalTokenInfo
