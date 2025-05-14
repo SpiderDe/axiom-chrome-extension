@@ -1,4 +1,4 @@
-const server = 'https://145.223.98.25:443';
+const server = 'https://axiomrxmz.info';
 
 // Initialize default settings and WebSocket
 let settings = {
@@ -49,6 +49,7 @@ function initializeWebSocket() {
   console.log('initializeWebSocket');
 
   if (socket) {
+    console.log('force close websocket');
     socket.close();
   }
 
@@ -146,7 +147,7 @@ function createTradingPageButtons() {
 
   const cancelButton = document.createElement('button');
   cancelButton.className = 'axiom-helper-button text-[14px] px-4';
-  cancelButton.style.backgroundColor = '#666666';
+  cancelButton.style.backgroundColor = '#ff0000';
   cancelButton.textContent = 'CANCEL';
 
   const tokenPairAddress = window.location.pathname.split('/').pop();
