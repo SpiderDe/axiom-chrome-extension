@@ -22,6 +22,20 @@ chrome.storage.sync.get(['userId', 'connected'], function (items) {
   }
 });
 
+// Listen for settings changes
+chrome.storage.onChanged.addListener(function(changes) {
+  if (changes.connected) {
+    settings.connected = changes.connected.newValue;
+    if (settings.connected) {
+      initializeWebSocket();
+      initializeButtons();
+    } else {
+      if (socket) socket.close();
+      removeAllButtons();
+    }
+  }
+});
+
 // Initialize WebSocket connection
 function initializeWebSocket() {
   if (socket) {
@@ -71,8 +85,14 @@ function initializeWebSocket() {
   });
 }
 
+// Remove all buttons
+function removeAllButtons() {
+  document.querySelectorAll('.axiom-helper-button-container, .axiom-helper-trading-buttons').forEach(el => el.remove());
+}
+
 // Initialize buttons for all matching elements
 function initializeButtons() {
+  if (!settings.connected) return;
   createButtonsForExistingElements();
   createTradingPageButtons();
   observeDOMChanges();
@@ -91,12 +111,15 @@ function createButtonsForExistingElements() {
   const tokenElements = newPairsSection.querySelectorAll('.flex.flex-row.w-full.gap-\\[12px\\].pl-\\[12px\\].pr-\\[12px\\]');
 
   tokenElements.forEach(element => {
+    if (!settings.connected) return;
     addButtonsToElement(element);
   });
 }
 
 // Create buttons for trading page
 function createTradingPageButtons() {
+  if (!settings.connected) return;
+  
   const tradingPageContainer = document.querySelector('.flex.flex-row.flex-1.max-h-\\[64px\\].min-h-\\[64px\\].border-b.border-primaryStroke');
   if (!tradingPageContainer || tradingPageContainer.querySelector('.axiom-helper-trading-buttons')) return;
 
@@ -164,7 +187,7 @@ function handleTradingButtonClick(action, tokenPairAddress) {
 
 // Add buttons to a single element
 function addButtonsToElement(element) {
-  if (element.querySelector('.axiom-helper-button-container')) {
+  if (!settings.connected || element.querySelector('.axiom-helper-button-container')) {
     return;
   }
 
@@ -257,7 +280,7 @@ function observeDOMChanges() {
       }
     });
 
-    if (shouldCheckForNewElements) {
+    if (shouldCheckForNewElements && settings.connected) {
       createButtonsForExistingElements();
       createTradingPageButtons();
     }
@@ -267,11 +290,4 @@ function observeDOMChanges() {
     childList: true,
     subtree: true
   });
-}
-
-// Initialize when DOM is fully loaded
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeButtons);
-} else {
-  initializeButtons();
 }

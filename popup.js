@@ -8,12 +8,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (items.userId) {
       userId.value = items.userId;
     }
-    updateConnectionStatus(items.connected);
+    updateConnectionState(items.connected);
   });
 
   connectButton.addEventListener('click', function() {
     const id = userId.value.trim();
     
+    if (connectButton.textContent === 'Disconnect') {
+      // Handle disconnect
+      chrome.storage.sync.set({
+        connected: false
+      }, function() {
+        updateConnectionState(false);
+      });
+      return;
+    }
+
     if (!id) {
       updateConnectionStatus(false, 'Please enter a User ID');
       return;
@@ -24,9 +34,16 @@ document.addEventListener('DOMContentLoaded', function() {
       userId: id,
       connected: true
     }, function() {
-      updateConnectionStatus(true, 'Connected successfully!');
+      updateConnectionState(true);
     });
   });
+
+  function updateConnectionState(connected) {
+    userId.disabled = connected;
+    connectButton.textContent = connected ? 'Disconnect' : 'Connect';
+    connectButton.className = connected ? 'disconnect' : '';
+    updateConnectionStatus(connected);
+  }
 
   function updateConnectionStatus(connected, message) {
     connectionStatus.textContent = message || (connected ? 'Connected' : 'Disconnected');

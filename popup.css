@@ -30,8 +30,13 @@ h1 {
   gap: 12px;
 }
 
+.input-group {
+  display: flex;
+  gap: 8px;
+}
+
 input[type="text"] {
-  width: 100%;
+  flex: 1;
   padding: 8px 12px;
   background-color: #2D3748;
   border: 1px solid #4A5568;
@@ -45,40 +50,47 @@ input[type="text"]:focus {
   outline: none;
 }
 
+input[type="text"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 button {
-  width: 100%;
   background-color: #52C5FF;
   color: #FFFFFF;
   border: none;
   border-radius: 4px;
-  padding: 10px 16px;
+  padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  white-space: nowrap;
 }
 
 button:hover {
   background-color: #3B9EDB;
 }
 
-button:active {
-  background-color: #2E89C2;
+button.disconnect {
+  background-color: #FF5252;
+}
+
+button.disconnect:hover {
+  background-color: #DB3B3B;
 }
 
 .status-message {
-  padding: 8px;
-  border-radius: 4px;
+  font-size: 12px;
   text-align: center;
-  font-size: 13px;
+  padding: 4px;
+  border-radius: 4px;
 }
 
 .status-message.connected {
-  background-color: #10B981;
-  color: #FFFFFF;
+  color: #10B981;
 }
 
 .status-message.disconnected {
-  background-color: #EF4444;
-  color: #FFFFFF;
+  color: #EF4444;
 }
