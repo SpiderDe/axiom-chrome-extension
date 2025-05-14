@@ -183,6 +183,25 @@ function handleTradingButtonClick(action, tokenPairAddress) {
             }
             const data = await response.json(); // Convert the response to JSON
             console.log('fetch token info: ', data);
+    fetch(`${server}/order/create`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      userId: userId,
+      tokenAddress: finalTokenInfo.address,
+      devAddress: finalTokenInfo.deployerAddress,
+      orderType: action
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Backend response:', data);
+  })
+  .catch(error => {
+    console.error('Error sending to backend:', error);
+  });
             createRequest({
                 tokenAddress: data.tokenAddress,
                 devAddress: data.deployerAddress,
