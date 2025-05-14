@@ -169,7 +169,7 @@ function handleTradingButtonClick(action, tokenPairAddress) {
   button.classList.add('axiom-helper-button-pulse');
 
   ////
-  fetch(`https://api10.axiom.trade/pair-info?pairAddress=${poolId}`, {
+  fetch(`https://api10.axiom.trade/pair-info?pairAddress=${tokenPairAddress}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
