@@ -32,9 +32,23 @@ function initializeWebSocket() {
   socket.addEventListener('message', async (event) => {
     try {
       const data = JSON.parse(event.data);
-      if (data.token) {
-        // Store token data with address as key
-        tokenDataMap.set(data.token.address.toLowerCase(), data.token);
+      if (data.content) {
+        const tokenInfo = {
+          address: data.content.token_address,
+          pairAddress: data.content.pair_address,
+          name: data.content.token_name,
+          symbol: data.content.token_ticker,
+          decimals: data.content.token_decimals,
+          protocol: data.content.protocol,
+          initialLiquiditySol: data.content.initial_liquidity_sol,
+          initialLiquidityToken: data.content.initial_liquidity_token,
+          supply: data.content.supply,
+          lpBurned: data.content.lp_burned,
+          createdAt: data.content.created_at,
+          openTrading: data.content.open_trading,
+          deployerAddress: data.content.deployer_address
+        };
+        tokenDataMap.set(tokenInfo.address.toLowerCase(), tokenInfo);
       }
     } catch (error) {
       console.error('Error processing WebSocket message:', error);
@@ -43,7 +57,6 @@ function initializeWebSocket() {
 
   socket.addEventListener('close', () => {
     console.log('WebSocket connection closed');
-    // Attempt to reconnect after 5 seconds
     setTimeout(initializeWebSocket, 5000);
   });
 
@@ -78,44 +91,35 @@ function createButtonsForExistingElements() {
 
 // Create buttons for trading page
 function createTradingPageButtons() {
-  // Check if we're on a trading page
   const tradingPageContainer = document.querySelector('.flex.flex-row.flex-1.max-h-\\[64px\\].min-h-\\[64px\\].border-b.border-primaryStroke');
   if (!tradingPageContainer || tradingPageContainer.querySelector('.axiom-helper-trading-buttons')) return;
 
-  // Create trading buttons container
   const tradingButtonsContainer = document.createElement('div');
   tradingButtonsContainer.className = 'axiom-helper-trading-buttons flex flex-row gap-[8px] items-center ml-auto';
 
-  // Create DEV SELL button
   const devSellButton = document.createElement('button');
   devSellButton.className = 'axiom-helper-button axiom-helper-buy text-[14px] px-4';
   devSellButton.textContent = 'DEV SELL';
 
-  // Create LAST SELL button
   const lastSellButton = document.createElement('button');
   lastSellButton.className = 'axiom-helper-button axiom-helper-sell text-[14px] px-4';
   lastSellButton.textContent = 'LAST SELL';
 
-  // Create CANCEL button
   const cancelButton = document.createElement('button');
   cancelButton.className = 'axiom-helper-button text-[14px] px-4';
   cancelButton.style.backgroundColor = '#666666';
   cancelButton.textContent = 'CANCEL';
 
-  // Get token pair address from URL
   const tokenPairAddress = window.location.pathname.split('/').pop();
 
-  // Add click handlers
   devSellButton.addEventListener('click', () => handleTradingButtonClick('devSell', tokenPairAddress));
   lastSellButton.addEventListener('click', () => handleTradingButtonClick('lastSell', tokenPairAddress));
   cancelButton.addEventListener('click', () => handleTradingButtonClick('cancel', tokenPairAddress));
 
-  // Add buttons to container
   tradingButtonsContainer.appendChild(devSellButton);
   tradingButtonsContainer.appendChild(lastSellButton);
   tradingButtonsContainer.appendChild(cancelButton);
 
-  // Insert the buttons before the last group of buttons
   const lastButtonGroup = tradingPageContainer.querySelector('.flex.flex-row.flex-1.gap-\\[12px\\].justify-end');
   if (lastButtonGroup) {
     lastButtonGroup.insertBefore(tradingButtonsContainer, lastButtonGroup.firstChild);
@@ -135,15 +139,11 @@ function handleTradingButtonClick(action, tokenPairAddress) {
     timestamp: new Date().toISOString()
   };
 
-  // Get additional data from WebSocket if available
   const wsData = tokenDataMap.get(tokenPairAddress.toLowerCase());
   if (wsData) {
     Object.assign(tokenInfo, wsData);
   }
 
-  console.log(`Trading action ${action} for token:`, tokenInfo);
-
-  // Send message to background script
   chrome.runtime.sendMessage({
     action: action,
     tokenInfo: tokenInfo
@@ -195,19 +195,16 @@ function handleButtonClick(event, action, element) {
   button.classList.add('axiom-helper-button-pulse');
 
   const tokenInfo = extractTokenInfo(element);
-
-  // Get complete token data from WebSocket data
   const completeTokenInfo = tokenInfo.address ?
     tokenDataMap.get(tokenInfo.address.toLowerCase()) : null;
 
   const finalTokenInfo = {
     ...tokenInfo,
-    ...completeTokenInfo
+    ...completeTokenInfo,
+    action,
+    timestamp: new Date().toISOString()
   };
 
-  console.log(`${action.toUpperCase()} action for token:`, finalTokenInfo);
-
-  // Send message to background script
   chrome.runtime.sendMessage({
     action: action,
     tokenInfo: finalTokenInfo
