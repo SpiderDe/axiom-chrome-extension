@@ -228,10 +228,7 @@ function extractTokenInfo(element) {
   if (!element) return { name: 'Unknown', symbol: 'Unknown', address: null };
 
   const addressButton = element.querySelector('button.text-textTertiary span');
-  const fullAddress = addressButton ? 
-    (addressButton.closest('button').dataset.address || 
-     addressButton.closest('button').getAttribute('data-address') || 
-     addressButton.textContent.trim()) : null;
+  const address = addressButton ? addressButton.textContent.trim()) : null;
 
   const nameElement = element.querySelector('.text-\\[16px\\].font-medium.tracking-\\[-0\\.02em\\].truncate');
   const fullNameElement = element.querySelector('.text-inherit.text-\\[16px\\]');
@@ -242,9 +239,7 @@ function extractTokenInfo(element) {
   return {
     symbol,
     name,
-    address: fullAddress,
-    abbreviatedAddress: abbreviateAddress(fullAddress),
-    timestamp: new Date().toISOString()
+    address: address
   };
 }
 
