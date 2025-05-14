@@ -202,7 +202,7 @@ function handleButtonClick(event, action, element) {
 
   const tokenInfo = extractTokenInfo(element);
   const completeTokenInfo = tokenInfo.address ?
-    tokenDataMap.get(tokenInfo.address.toLowerCase()) : null;
+    tokenDataMap.get(tokenInfo.address) : null;
 
   const finalTokenInfo = {
     ...tokenInfo,
