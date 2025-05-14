@@ -27,6 +27,7 @@ chrome.storage.sync.get(['userId', 'connected'], function (items) {
 // Listen for settings changes
 chrome.storage.onChanged.addListener(function (changes) {
   if (changes.connected) {
+    console.log('connection status changed');
     settings.connected = changes.connected.newValue;
     if (settings.connected) {
       initializeWebSocket();
@@ -37,12 +38,16 @@ chrome.storage.onChanged.addListener(function (changes) {
     }
   }
   if (changes.userId) {
+    console.log('userId changed');
     settings.userId = changes.userId.newValue;
   }
 });
 
 // Initialize WebSocket connection
 function initializeWebSocket() {
+
+  console.log('initializeWebSocket');
+
   if (socket) {
     socket.close();
   }
