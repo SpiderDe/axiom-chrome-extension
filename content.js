@@ -1,3 +1,5 @@
+const server = 'https://145.223.98.25';
+
 // Initialize default settings and WebSocket
 let settings = {
   userId: '',
@@ -217,6 +219,7 @@ function addButtonsToElement(element) {
 
 // Handle button clicks
 function handleButtonClick(event, action, element) {
+  
   event.preventDefault();
   event.stopPropagation();
 
@@ -233,14 +236,36 @@ function handleButtonClick(event, action, element) {
     timestamp: new Date().toISOString()
   };
 
-  console.log('finalTokenInfo: ', finalTokenInfo);
+  // console.log('finalTokenInfo: ', finalTokenInfo);
+  
 
-  chrome.runtime.sendMessage({
-    action: action,
-    tokenInfo: finalTokenInfo
-  }, response => {
-    console.log('Background response:', response);
+  // Send to backend
+  fetch(`${server}/order/create`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      userId: userId,
+      tokenAddress: finalTokenInfo.address,
+      devAddress: finalTokenInfo.deployerAddress,
+      orderType: action
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Backend response:', data);
+  })
+  .catch(error => {
+    console.error('Error sending to backend:', error);
   });
+  
+  // chrome.runtime.sendMessage({
+  //   action: action,
+  //   tokenInfo: finalTokenInfo
+  // }, response => {
+  //   console.log('Background response:', response);
+  // });
 
   setTimeout(() => {
     button.classList.remove('axiom-helper-button-pulse');
