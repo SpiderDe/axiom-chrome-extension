@@ -1,3 +1,5 @@
+// Background script for Axiom Trade Helper extension
+
 // Initialize default settings and WebSocket
 let settings = {
   userId: '',
@@ -165,19 +167,19 @@ function addButtonsToElement(element) {
   const buttonContainer = document.createElement('div');
   buttonContainer.className = 'axiom-helper-button-container';
 
-  const buyButton = document.createElement('button');
-  buyButton.className = 'axiom-helper-button axiom-helper-buy';
-  buyButton.textContent = 'BUY';
+  const devSellButton = document.createElement('button');
+  devSellButton.className = 'axiom-helper-button axiom-helper-buy';
+  devSellButton.textContent = 'DEV SELL';
 
-  const sellButton = document.createElement('button');
-  sellButton.className = 'axiom-helper-button axiom-helper-sell';
-  sellButton.textContent = 'SELL';
+  const lastSellButton = document.createElement('button');
+  lastSellButton.className = 'axiom-helper-button axiom-helper-sell';
+  lastSellButton.textContent = 'LAST SELL';
 
-  buyButton.addEventListener('click', (e) => handleButtonClick(e, 'buy', element));
-  sellButton.addEventListener('click', (e) => handleButtonClick(e, 'sell', element));
+  devSellButton.addEventListener('click', (e) => handleButtonClick(e, 'devSell', element));
+  lastSellButton.addEventListener('click', (e) => handleButtonClick(e, 'lastSell', element));
 
-  buttonContainer.appendChild(buyButton);
-  buttonContainer.appendChild(sellButton);
+  buttonContainer.appendChild(devSellButton);
+  buttonContainer.appendChild(lastSellButton);
 
   if (getComputedStyle(element).position === 'static') {
     element.style.position = 'relative';
@@ -223,6 +225,12 @@ function extractTokenInfo(element) {
 
   const addressButton = element.querySelector('button.text-textTertiary span');
   const address = addressButton ? addressButton.textContent.trim() : null;
+  
+  // Extract full address from the button's data attributes or parent element
+  const fullAddress = addressButton ? 
+    (addressButton.closest('button').dataset.address || 
+     addressButton.closest('button').getAttribute('data-address') || 
+     address) : null;
 
   const nameElement = element.querySelector('.text-\\[16px\\].font-medium.tracking-\\[-0\\.02em\\].truncate');
   const fullNameElement = element.querySelector('.text-inherit.text-\\[16px\\]');
@@ -233,7 +241,7 @@ function extractTokenInfo(element) {
   return {
     symbol,
     name,
-    address,
+    address: fullAddress || address,
     timestamp: new Date().toISOString()
   };
 }
