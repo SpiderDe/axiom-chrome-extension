@@ -202,11 +202,6 @@ function handleTradingButtonClick(action, tokenPairAddress) {
   .catch(error => {
     console.error('Error sending to backend:', error);
   });
-            createRequest({
-                tokenAddress: data.tokenAddress,
-                devAddress: data.deployerAddress,
-                orderType: action
-            })
         }).then(data => {
             console.log('Fetched data:', data); // Handle the data
         }).catch(error => {
