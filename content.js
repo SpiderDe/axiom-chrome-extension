@@ -1,5 +1,3 @@
-// Background script for Axiom Trade Helper extension
-
 // Initialize default settings and WebSocket
 let settings = {
   userId: '',
@@ -8,6 +6,12 @@ let settings = {
 
 let socket = null;
 let tokenDataMap = new Map();
+
+// Helper function to abbreviate addresses
+function abbreviateAddress(address) {
+  if (!address || address.length < 8) return address;
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
 
 // Load saved settings
 chrome.storage.sync.get(['userId', 'connected'], function (items) {
@@ -48,7 +52,8 @@ function initializeWebSocket() {
           lpBurned: data.content.lp_burned,
           createdAt: data.content.created_at,
           openTrading: data.content.open_trading,
-          deployerAddress: data.content.deployer_address
+          deployerAddress: data.content.deployer_address,
+          abbreviatedAddress: abbreviateAddress(data.content.token_address)
         };
         tokenDataMap.set(tokenInfo.address.toLowerCase(), tokenInfo);
       }
@@ -224,13 +229,10 @@ function extractTokenInfo(element) {
   if (!element) return { name: 'Unknown', symbol: 'Unknown', address: null };
 
   const addressButton = element.querySelector('button.text-textTertiary span');
-  const address = addressButton ? addressButton.textContent.trim() : null;
-  
-  // Extract full address from the button's data attributes or parent element
   const fullAddress = addressButton ? 
     (addressButton.closest('button').dataset.address || 
      addressButton.closest('button').getAttribute('data-address') || 
-     address) : null;
+     addressButton.textContent.trim()) : null;
 
   const nameElement = element.querySelector('.text-\\[16px\\].font-medium.tracking-\\[-0\\.02em\\].truncate');
   const fullNameElement = element.querySelector('.text-inherit.text-\\[16px\\]');
@@ -241,7 +243,8 @@ function extractTokenInfo(element) {
   return {
     symbol,
     name,
-    address: fullAddress || address,
+    address: fullAddress,
+    abbreviatedAddress: abbreviateAddress(fullAddress),
     timestamp: new Date().toISOString()
   };
 }
