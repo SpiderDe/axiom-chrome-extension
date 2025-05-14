@@ -36,6 +36,9 @@ chrome.storage.onChanged.addListener(function (changes) {
       removeAllButtons();
     }
   }
+  if (changes.userId) {
+    settings.userId = changes.userId.newValue;
+  }
 });
 
 // Initialize WebSocket connection
