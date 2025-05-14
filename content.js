@@ -52,10 +52,9 @@ function initializeWebSocket() {
           lpBurned: data.content.lp_burned,
           createdAt: data.content.created_at,
           openTrading: data.content.open_trading,
-          deployerAddress: data.content.deployer_address,
-          abbreviatedAddress: abbreviateAddress(data.content.token_address)
+          deployerAddress: data.content.deployer_address
         };
-        tokenDataMap.set(tokenInfo.address.toLowerCase(), tokenInfo);
+        tokenDataMap.set(abbreviateAddress(data.content.token_address), tokenInfo);
       }
     } catch (error) {
       console.error('Error processing WebSocket message:', error);
