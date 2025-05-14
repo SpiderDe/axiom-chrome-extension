@@ -1,0 +1,82 @@
+/* Button Styles */
+.axiom-helper-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 8px;
+  border: none;
+  color: #FFFFFF;
+  min-width: 60px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.axiom-helper-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.axiom-helper-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.axiom-helper-buy {
+  background-color: #52C5FF;
+}
+
+.axiom-helper-buy:hover {
+  background-color: #3B9EDB;
+}
+
+.axiom-helper-sell {
+  background-color: #FF5252;
+}
+
+.axiom-helper-sell:hover {
+  background-color: #DB3B3B;
+}
+
+.axiom-helper-button-container {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.flex.flex-row.w-full:hover .axiom-helper-button-container {
+  opacity: 1;
+}
+
+/* Trading page specific styles */
+.axiom-helper-trading-buttons {
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+.axiom-helper-trading-buttons .axiom-helper-button {
+  opacity: 1;
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+/* Animation for button click */
+@keyframes buttonPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.axiom-helper-button-pulse {
+  animation: buttonPulse 0.4s ease;
+}
