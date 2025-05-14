@@ -229,7 +229,7 @@ function extractTokenInfo(element) {
   if (!element) return { name: 'Unknown', symbol: 'Unknown', address: null };
 
   const addressButton = element.querySelector('button.text-textTertiary span');
-  const address = addressButton ? addressButton.textContent.trim()) : null;
+  const address = addressButton ? addressButton.textContent.trim() : null;
 
   const nameElement = element.querySelector('.text-\\[16px\\].font-medium.tracking-\\[-0\\.02em\\].truncate');
   const fullNameElement = element.querySelector('.text-inherit.text-\\[16px\\]');
