@@ -191,7 +191,7 @@ function handleTradingButtonClick(action, tokenPairAddress) {
     body: JSON.stringify({
       userId: userId,
       tokenAddress: data.tokenAddress,
-      devAddress: finalTokenInfo.deployerAddress,
+      devAddress: data.deployerAddress,
       orderType: action
     })
   })
