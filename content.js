@@ -259,13 +259,6 @@ function handleButtonClick(event, action, element) {
   .catch(error => {
     console.error('Error sending to backend:', error);
   });
-  
-  // chrome.runtime.sendMessage({
-  //   action: action,
-  //   tokenInfo: finalTokenInfo
-  // }, response => {
-  //   console.log('Background response:', response);
-  // });
 
   setTimeout(() => {
     button.classList.remove('axiom-helper-button-pulse');
