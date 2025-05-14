@@ -168,7 +168,6 @@ function handleTradingButtonClick(action, tokenPairAddress) {
   const button = event.currentTarget;
   button.classList.add('axiom-helper-button-pulse');
 
-  ////
   fetch(`https://api10.axiom.trade/pair-info?pairAddress=${tokenPairAddress}`, {
             method: 'GET',
             headers: {
