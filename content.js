@@ -70,17 +70,17 @@ function initializeWebSocket() {
       if (data.content) {
         const tokenInfo = {
           address: data.content.token_address,
-          pairAddress: data.content.pair_address,
+          // pairAddress: data.content.pair_address,
           name: data.content.token_name,
           symbol: data.content.token_ticker,
-          decimals: data.content.token_decimals,
-          protocol: data.content.protocol,
-          initialLiquiditySol: data.content.initial_liquidity_sol,
-          initialLiquidityToken: data.content.initial_liquidity_token,
-          supply: data.content.supply,
-          lpBurned: data.content.lp_burned,
-          createdAt: data.content.created_at,
-          openTrading: data.content.open_trading,
+          // decimals: data.content.token_decimals,
+          // protocol: data.content.protocol,
+          // initialLiquiditySol: data.content.initial_liquidity_sol,
+          // initialLiquidityToken: data.content.initial_liquidity_token,
+          // supply: data.content.supply,
+          // lpBurned: data.content.lp_burned,
+          // createdAt: data.content.created_at,
+          // openTrading: data.content.open_trading,
           deployerAddress: data.content.deployer_address
         };
         tokenDataMap.set(abbreviateAddress(data.content.token_address), tokenInfo);
@@ -214,6 +214,8 @@ async function handleTradingButtonClick(event, action, tokenPairAddress) {
         userId: settings?.userId,
         tokenAddress: data.tokenAddress,
         devAddress: data.deployerAddress,
+        tokenSymbol: data.tokenTicker,
+        tokenName: data.tokenName,
         orderType: action
       })
     });
@@ -285,6 +287,8 @@ function handleButtonClick(event, action, element) {
     userId: settings.userId,
     tokenAddress: finalTokenInfo.address,
     devAddress: finalTokenInfo.deployerAddress,
+    tokenSymbol: finalTokenInfo.symbol,
+    tokenName: finalTokenInfo.name,
     orderType: action
   }
 
