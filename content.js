@@ -33,7 +33,10 @@ chrome.storage.onChanged.addListener(function (changes) {
       initializeWebSocket();
       initializeButtons();
     } else {
-      if (socket) socket.close();
+      if (socket) {
+        socket.close();
+        socket = null;
+      }
       removeAllButtons();
     }
   }
@@ -51,6 +54,7 @@ function initializeWebSocket() {
   if (socket) {
     console.log('force close websocket');
     socket.close();
+    socket = null;
   }
 
   socket = new WebSocket('wss://cluster5.axiom.trade/?');
@@ -152,9 +156,9 @@ function createTradingPageButtons() {
 
   const tokenPairAddress = window.location.pathname.split('/').pop();
 
-  devSellButton.addEventListener('click', () => handleTradingButtonClick('devSell', tokenPairAddress));
-  lastSellButton.addEventListener('click', () => handleTradingButtonClick('lastSell', tokenPairAddress));
-  cancelButton.addEventListener('click', () => handleTradingButtonClick('cancel', tokenPairAddress));
+  devSellButton.addEventListener('click', (e) => handleTradingButtonClick(e, 'devSell', tokenPairAddress));
+  lastSellButton.addEventListener('click', (e) => handleTradingButtonClick(e, 'lastSell', tokenPairAddress));
+  cancelButton.addEventListener('click', (e) => handleTradingButtonClick(e, 'cancel', tokenPairAddress));
 
   tradingButtonsContainer.appendChild(devSellButton);
   tradingButtonsContainer.appendChild(lastSellButton);
@@ -169,56 +173,62 @@ function createTradingPageButtons() {
 }
 
 // Handle trading page button clicks
-function handleTradingButtonClick(action, tokenPairAddress) {
+async function handleTradingButtonClick(event, action, tokenPairAddress) {
 
   console.log('handleTradingButtonClick, tokenPairAddress: ', tokenPairAddress);
-
 
   const button = event.currentTarget;
   button.classList.add('axiom-helper-button-pulse');
 
-  fetch(`https://api10.axiom.trade/pair-info?pairAddress=${tokenPairAddress}`, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json, text/plain, */*',
-      'Origin': 'https://axiom.trade',
-      'Referer': 'https://axiom.trade/',
-    },
-    credentials: 'include',
-  }).then(async response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+  try {
+    // Step 1: Fetch token info
+    const tokenInfoRes = await fetch(`https://api10.axiom.trade/pair-info?pairAddress=${tokenPairAddress}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Origin': 'https://axiom.trade',
+        'Referer': 'https://axiom.trade/',
+      },
+      credentials: 'include',
+    });
+
+    if (!tokenInfoRes.ok) {
+      throw new Error(`Token info request failed: HTTP ${tokenInfoRes.status}`);
     }
-    const data = await response.json(); // Convert the response to JSON
-    console.log('fetch token info: ', data);
-    fetch(`${server}/order/create`, {
+
+    const data = await tokenInfoRes.json();
+    console.log('Fetched token info:', data);
+
+    // Validate required fields
+    if (!data.tokenAddress || !data.deployerAddress) {
+      throw new Error('Invalid token data: tokenAddress or deployerAddress missing.');
+    }
+
+    // Step 2: Send to backend
+    const backendRes = await fetch(`${server}/order/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        userId: settings.userId,
+        userId: settings?.userId,
         tokenAddress: data.tokenAddress,
         devAddress: data.deployerAddress,
         orderType: action
       })
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Backend response:', data);
-      })
-      .catch(error => {
-        console.error('Error sending to backend:', error);
-      });
-  }).then(data => {
-    console.log('Fetched data:', data); // Handle the data
-  }).catch(error => {
-    console.error('Error fetching data:', error);
-  });
+    });
 
-  setTimeout(() => {
-    button.classList.remove('axiom-helper-button-pulse');
-  }, 400);
+    const backendData = await backendRes.json();
+    console.log('Backend response:', backendData);
+
+  } catch (error) {
+    console.error('Error in trading button flow:', error.message || error);
+  } finally {
+    // Always remove the animation
+    setTimeout(() => {
+      button.classList.remove('axiom-helper-button-pulse');
+    }, 400);
+  }
 }
 
 // Add buttons to a single element
@@ -271,7 +281,14 @@ function handleButtonClick(event, action, element) {
   };
 
   // console.log('finalTokenInfo: ', finalTokenInfo);
+  const sendData = {
+    userId: settings.userId,
+    tokenAddress: finalTokenInfo.address,
+    devAddress: finalTokenInfo.deployerAddress,
+    orderType: action
+  }
 
+  console.log('sendData: ', sendData);
 
   // Send to backend
   fetch(`${server}/order/create`, {
@@ -279,12 +296,7 @@ function handleButtonClick(event, action, element) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      userId: settings.userId,
-      tokenAddress: finalTokenInfo.address,
-      devAddress: finalTokenInfo.deployerAddress,
-      orderType: action
-    })
+    body: JSON.stringify(sendData)
   })
     .then(response => response.json())
     .then(data => {
